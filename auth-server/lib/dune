@@ -1,5 +1,5 @@
 (library
   (name lib)
   (public_name auth-server)
-  (libraries digestif.c cohttp-lwt-unix graphql-lwt graphql-cohttp safepass nocrypto uuidm str)
+  (libraries digestif.c cohttp-lwt-unix graphql-lwt graphql-cohttp safepass nocrypto uuidm str opium)
   (preprocess (pps graphql_ppx)))

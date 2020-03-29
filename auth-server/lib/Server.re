@@ -2,6 +2,8 @@ open Lwt.Infix;
 
 open Graphql_lwt;
 
+open Opium.Std;
+
 let key = Sys.getenv("HASURA_GRAPHQL_JWT_SECRET");
 let randomSeed = Random.State.make_self_init();
 let genUuid = Uuidm.v4_gen(randomSeed); // TODO: might need to change this for extra randomness
@@ -150,6 +152,25 @@ module Graphql_cohttp_lwt =
     Cohttp_lwt.Body,
   );
 
+let (|.) = (a, b) => b(a);
+
+let gqlCallbacks = app => {
+  let handler = (req: Rock.Request.t) => {
+    Lwt.(
+      Graphql_cohttp_lwt.execute_request(schema, (), req.request, req.body)
+      >>= (
+        res =>
+          switch (res) {
+          | `Response(res) =>
+            Rock.Response.of_response_body(res) |> Lwt.return
+          /* | `Expert(res) => Rock.Response.of_response_body(res) |> Lwt.return */
+          }
+      )
+    );
+  };
+
+  app |> post("/graphql", handler);
+};
 let run = () => {
   let on_exn =
     fun
@@ -163,8 +184,11 @@ let run = () => {
         )
       )
     | exn => Logs.err(m => m("Unhandled exception: %a", Fmt.exn, exn));
-  let callback = Graphql_cohttp_lwt.make_callback(req => (), schema);
-  let server = Cohttp_lwt_unix.Server.make_response_action(~callback, ());
-  let mode = `TCP(`Port(1111));
-  Cohttp_lwt_unix.Server.create(~on_exn, ~mode, server) |> Lwt_main.run;
+
+  /* let server =
+       Cohttp_lwt_unix.Server.make_response_action(~callback=gqlCallback, ());
+     let mode = `TCP(`Port(1111));
+     Cohttp_lwt_unix.Server.create(~on_exn, ~mode, server) |> Lwt_main.run; */
+
+  App.empty |> App.port(1111) |> gqlCallbacks |> App.run_command;
 };
