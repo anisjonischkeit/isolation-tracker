@@ -157,7 +157,13 @@ let (|.) = (a, b) => b(a);
 let gqlCallbacks = app => {
   let handler = (req: Rock.Request.t) => {
     Lwt.(
-      Graphql_cohttp_lwt.execute_request(schema, (), req.request, req.body)
+      Graphql_cohttp_lwt.make_callback(
+        req => (),
+        schema,
+        (),
+        req.request,
+        req.body,
+      )
       >>= (
         res =>
           switch (res) {
