@@ -1,0 +1,3 @@
+- args:
+    name: auth-server
+  type: remove_remote_schema
