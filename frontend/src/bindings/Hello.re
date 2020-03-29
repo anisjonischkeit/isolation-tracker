@@ -28,11 +28,14 @@ type loginSuccessResponse = {authResponse};
 type authError = {message: string};
 type loginErrorResponse = {error: authError};
 
+type loginOptions = {redirect_uri: string};
+
 [@bs.module "hellojs"]
 external login:
-  string => Promise.Js.t(loginSuccessResponse, loginErrorResponse) =
+  (string, loginOptions) =>
+  Promise.Js.t(loginSuccessResponse, loginErrorResponse) =
   "login";
-let login = network => login(network)->Promise.Js.toResult;
+let login = (network, opts) => login(network, opts)->Promise.Js.toResult;
 
 [@bs.module "hellojs"]
 external logout: string => Promise.Js.t(unit, loginErrorResponse) = "logout";

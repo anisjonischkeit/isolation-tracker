@@ -18,11 +18,14 @@ let make = () => {
 
   let loginToFB = _e => {
     setLoginState(_ => Loading);
-    Hello.login("facebook")
+    Hello.login(
+      "facebook",
+      {redirect_uri: "localhost:1111/fb-login-callback"},
+    )
     ->Promise.get(r =>
         switch (r) {
         | Ok(res) => setLoginState(_ => LoggedIn(res.authResponse))
-        | Error(e) => setLoginState(_ => LogoutError(e.error.message))
+        | Error(e) => setLoginState(_ => LoginError(e.error.message))
         }
       );
   };
