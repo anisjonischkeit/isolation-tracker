@@ -1,0 +1,8 @@
+
+[build]
+  # This will be run the site build
+  command = "cd auth-lambda && cargo build --release --target x86_64-unknown-linux-musl && zip -j ./build/rust.zip ./target/x86_64-unknown-linux-musl/release/bootstrap"
+  # This is the directory is publishing to netlify's CDN
+  publish = "build"
+  # functions build directory
+  functions = "functions-build"
