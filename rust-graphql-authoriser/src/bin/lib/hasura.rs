@@ -41,7 +41,7 @@ pub fn get_user_id(
     admin_secret: &str,
 ) -> Result<String, Errors> {
     let mut variables = HashMap::new();
-    variables.insert("$facebook_id".to_owned(), facebookId.to_owned());
+    variables.insert("facebook_id".to_owned(), facebookId.to_owned());
 
     let raw_body = serde_json::to_string(&GraphQLBody{
         operationName: "GetUserId".to_owned(),
