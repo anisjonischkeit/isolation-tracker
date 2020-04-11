@@ -57,6 +57,8 @@ pub fn get_user_id(
         .or_else(to_req_failed)?;
 
     let raw_body = response.text().or_else(to_req_failed)?;
+    info!("received response from hasura get user fn: {}", raw_body);
+
     let body: UsersDataBody = serde_json::from_str(&raw_body).or_else(to_req_failed)?;
 
     match body.data.users.as_slice() {
