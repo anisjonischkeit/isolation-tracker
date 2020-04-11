@@ -1,4 +1,6 @@
+use log::info;
 use serde_derive::{Deserialize, Serialize};
+use serde_json::from_str;
 use url::form_urlencoded;
 
 #[derive(Deserialize, Debug)]
@@ -36,22 +38,33 @@ struct DebugTokenResponse {
 }
 
 pub fn get_fb_id(admin_access_token: &str, user_access_token: &str) -> Result<String, String> {
-    let req_url: String =
-        form_urlencoded::Serializer::new("https://graph.facebook.com/debug_token".to_owned())
+    let req_url: String = format!(
+        "https://graph.facebook.com/debug_token?{}",
+        form_urlencoded::Serializer::new(String::new())
             .append_pair("input_token", user_access_token)
             .append_pair("access_token", admin_access_token)
-            .finish();
-    let result =
-        reqwest::blocking::get(&req_url).and_then(|data| data.json::<DebugTokenResponse>());
-
-    match result {
-        Ok(resp) => {
+            .finish()
+    );
+    reqwest::blocking::get(&req_url)
+        .or_else(|err| Err(format!("{}", err)))
+        .and_then(|data| {
+            if data.status().is_success() {
+                data.text().or_else(|err| Err(format!("{}", err)))
+            } else {
+                Err("error while fetching debug_token".to_owned())
+            }
+        })
+        .and_then(|text| {
+            info!("fb debug token responded with: {}", text);
+            serde_json::from_str::<DebugTokenResponse>(&text)
+                .or_else(|err| Err(format!("failed to encode json: {}", err)))
+        })
+        .and_then(|resp| {
             if resp.data.is_valid {
                 Ok(resp.data.user_id)
             } else {
                 Err("invalid access token".to_owned())
             }
-        }
-        Err(err) => Err(format!("failed to get result: {}", err)),
-    }
+        })
+        .or_else(|err| Err(format!("get_fb_id failed: {}", err)))
 }
