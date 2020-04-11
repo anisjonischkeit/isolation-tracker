@@ -145,7 +145,10 @@ resource "aws_lambda_function" "fb_auth" {
 
   environment {
     variables = {
-      foo = "bar"
+      FB_ACCESS_TOKEN     = var.facebook_access_token
+      JWT_KEY             = var.hasura_jwt_secret_key
+      HASURA_API_URL      = var.hasura_api_url
+      HASURA_ADMIN_SECRET = var.hasura_admin_secret
     }
   }
 }

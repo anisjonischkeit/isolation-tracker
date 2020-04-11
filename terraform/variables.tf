@@ -101,3 +101,11 @@ variable "ecs_cluster_name" {
   description = "The name to assign to the ECS cluster"
   default     = "hasura-cluster"
 }
+
+variable "facebook_access_token" {
+  description = "The Application access token needed to verify a user's token"
+}
+
+variable "hasura_api_url" {
+  description = "Where your hasura api can be hit from "
+}
