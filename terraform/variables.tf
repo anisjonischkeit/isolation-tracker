@@ -109,3 +109,8 @@ variable "facebook_access_token" {
 variable "hasura_api_url" {
   description = "Where your hasura api can be hit from "
 }
+
+variable "cloudflare_email" {}
+
+variable "cloudflare_api_key" {}
+variable "cloudflare_zone_id" {}

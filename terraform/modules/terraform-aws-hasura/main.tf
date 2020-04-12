@@ -24,22 +24,30 @@ resource "aws_acm_certificate" "hasura" {
 # Validate the certificate
 # -----------------------------------------------------------------------------
 
-data "aws_route53_zone" "hasura" {
-  name = "${var.domain}."
-}
-
-resource "aws_route53_record" "hasura_validation" {
-  depends_on = [aws_acm_certificate.hasura]
+resource "cloudflare_record" "hasura_validation" {
+  zone_id    = var.cloudflare_zone_id
   name       = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_name"]
+  value      = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_value"]
   type       = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_type"]
-  zone_id    = data.aws_route53_zone.hasura.zone_id
-  records    = [aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_value"]]
   ttl        = 300
+  depends_on = [aws_acm_certificate.hasura]
 }
 
 resource "aws_acm_certificate_validation" "hasura" {
   certificate_arn         = aws_acm_certificate.hasura.arn
-  validation_record_fqdns = aws_route53_record.hasura_validation.*.fqdn
+  validation_record_fqdns = [cloudflare_record.hasura_validation.hostname]
+}
+
+# -----------------------------------------------------------------------------
+# Create A record to point to the ALB
+# -----------------------------------------------------------------------------
+
+resource "cloudflare_record" "hasura" {
+  zone_id = var.cloudflare_zone_id
+  name    = "${var.hasura_subdomain}.${var.domain}"
+  value   = aws_alb.hasura.dns_name
+  type    = "CNAME" // this would be an A with Alias in route53
+  ttl     = 300
 }
 
 # -----------------------------------------------------------------------------
@@ -474,21 +482,5 @@ resource "aws_alb_listener" "hasura" {
   default_action {
     target_group_arn = aws_alb_target_group.hasura.id
     type             = "forward"
-  }
-}
-
-# -----------------------------------------------------------------------------
-# Create Route 53 record to point to the ALB
-# -----------------------------------------------------------------------------
-
-resource "aws_route53_record" "hasura" {
-  zone_id = data.aws_route53_zone.hasura.zone_id
-  name    = "${var.hasura_subdomain}.${var.domain}"
-  type    = "A"
-
-  alias {
-    name                   = aws_alb.hasura.dns_name
-    zone_id                = aws_alb.hasura.zone_id
-    evaluate_target_health = true
   }
 }

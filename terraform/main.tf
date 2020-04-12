@@ -12,5 +12,7 @@ module "terraform-aws-hasura" {
   rds_password             = var.rds_password
   rds_db_name              = var.rds_db_name
   rds_instance             = var.rds_instance
+  cloudflare_zone_id       = var.cloudflare_zone_id
   vpc_enable_dns_hostnames = true
+  multi_az                 = false
 }

@@ -101,3 +101,5 @@ variable "ecs_cluster_name" {
   description = "The name to assign to the ECS cluster"
   default     = "hasura-cluster"
 }
+
+variable "cloudflare_zone_id" {}
