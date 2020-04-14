@@ -1,3 +1,0 @@
-[submodule "hasura/terraform-aws-hasura"]
-	path = hasura/terraform-aws-hasura
-	url = git@github.com:Rayraegah/terraform-aws-hasura.git
