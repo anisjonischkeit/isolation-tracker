@@ -27,7 +27,7 @@ resource "aws_acm_certificate" "hasura" {
 resource "cloudflare_record" "hasura_validation" {
   zone_id    = var.cloudflare_zone_id
   name       = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_name"]
-  value      = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_value"]
+  value      = trim(aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_value"], ".") // trim trailing `.`, cloudflare removes it too
   type       = aws_acm_certificate.hasura.domain_validation_options[0]["resource_record_type"]
   ttl        = 300
   depends_on = [aws_acm_certificate.hasura]
@@ -332,6 +332,10 @@ locals {
     {
       name  = "HASURA_GRAPHQL_JWT_SECRET",
       value = "{\"type\":\"${var.hasura_jwt_secret_algo}\", \"key\": \"${var.hasura_jwt_secret_key}\"}"
+    },
+    {
+      name  = "HASURA_GRAPHQL_UNAUTHORIZED_ROLE",
+      value = "anonymous"
     }
   ]
 
