@@ -1,8 +1,0 @@
-
-[build]
-  # This will be run the site build
-  command = "#"
-  # This is the directory is publishing to netlify's CDN
-  publish = "auth-lambda/build"
-  # functions build directory
-  functions = "functions-build"
