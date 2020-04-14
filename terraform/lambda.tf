@@ -136,7 +136,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
 }
 
 resource "aws_lambda_function" "fb_auth" {
-  filename      = "../rust-graphql-authoriser/rust.zip"
+  filename      = "../authoriser/rust.zip"
   function_name = local.lambda_name
   role          = aws_iam_role.cloudwatch.arn
   handler       = "main.main"
@@ -144,7 +144,7 @@ resource "aws_lambda_function" "fb_auth" {
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-  source_code_hash = filebase64sha256("../rust-graphql-authoriser/rust.zip")
+  source_code_hash = filebase64sha256("../authoriser/rust.zip")
 
   runtime = "provided"
 
