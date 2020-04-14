@@ -53,16 +53,40 @@ fn handle(serde_result: Result<HasuraBody<VerifyFBAccessInput>, String>) -> (u16
             // get hasura id
             let res = hasura::get_user_id(&client, &hasura_url, &fb_user_id, &hasura_admin_secret);
 
-            match res {
-                Ok(user_id) => serde_json::to_string(&VerifyFBAccessOutput {
-                    ok: true,
-                    access_token: user_id,
-                })
-                .or_else(|err| Err(format!("{}", err))),
-                Err(hasura::Errors::HasuraRequestFailed(msg)) => {
+            let user_id = match res {
+                Ok(user_id) => Ok(user_id),
+                Err(hasura::GetErrors::RequestFailed(msg)) => {
                     Err(format!("failed to get user from hasura: {}", msg))
                 }
-            }
+                Err(hasura::GetErrors::TooManyUsersFound(msg)) => {
+                    error!("too many users found for id: {}", msg);
+                    Err("Something went wrong".to_owned())
+                }
+                Err(hasura::GetErrors::NoUsersFound(_)) => {
+                    let res = hasura::create_user(
+                        &client,
+                        &hasura_url,
+                        &fb_user_id,
+                        &hasura_admin_secret,
+                    );
+
+                    res.or_else(|err| {
+                        Err(match err {
+                            hasura::CreateErrors::RequestFailed(msg) => msg,
+                            hasura::CreateErrors::UsersExists(msg) => msg,
+                        })
+                    })
+                    .or_else(|msg| Err(format!("failed to create user user from hasura: {}", msg)))
+                }
+            }?;
+
+            let jwt = hasura::create_jwt(jwt_key, user_id)?;
+
+            serde_json::to_string(&VerifyFBAccessOutput {
+                ok: true,
+                access_token: jwt,
+            })
+            .or_else(|err| Err(format!("{}", err)))
         });
 
     match res {
