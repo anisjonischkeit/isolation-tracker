@@ -1,0 +1,1 @@
+let hasura_url = "https://isostatus-hasura.anis.wtf/v1/graphql";

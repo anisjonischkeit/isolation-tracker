@@ -1,0 +1,32 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: token
+        type: String!
+      name: SampleInput
+    objects:
+    - description: null
+      fields:
+      - description: null
+        name: accessToken
+        type: String!
+      name: SampleOutput
+    scalars: []
+  type: set_custom_types
+- args:
+    comment: null
+    definition:
+      arguments:
+      - description: null
+        name: token
+        type: String!
+      forward_client_headers: false
+      handler: http://host.docker.internal:3000
+      headers: []
+      kind: synchronous
+      output_type: SampleOutput
+    name: actionName
+  type: create_action

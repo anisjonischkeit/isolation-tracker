@@ -1,0 +1,49 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: token
+        type: String!
+      name: SampleInput
+    - description: null
+      fields:
+      - description: null
+        name: token
+        type: String!
+      name: FBLoginInput
+    objects:
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: accessToken
+        type: String!
+      name: SampleOutput
+      relationships: null
+    - description: null
+      fields:
+      - description: null
+        name: ok
+        type: Boolean!
+      - description: null
+        name: access_token
+        type: String!
+      name: AccessTokenReturn
+    scalars: []
+  type: set_custom_types
+- args:
+    comment: null
+    definition:
+      arguments:
+      - description: null
+        name: fbAccessToken
+        type: String!
+      forward_client_headers: false
+      handler: http://host.docker.internal:3000
+      headers: []
+      kind: synchronous
+      output_type: AccessTokenReturn
+    name: loginWithFB
+  type: create_action

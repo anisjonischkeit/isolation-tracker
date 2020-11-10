@@ -1,0 +1,23 @@
+- args:
+    name: loginWithFB
+  type: drop_action
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: token
+        type: String!
+      name: SampleInput
+    objects:
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: accessToken
+        type: String!
+      name: SampleOutput
+      relationships: null
+    scalars: []
+  type: set_custom_types

@@ -1,0 +1,15 @@
+- args:
+    permission:
+      columns:
+      - facebook_id
+      - id
+      filter: {}
+      localPresets:
+      - key: ""
+        value: ""
+      set: {}
+    role: auth-server
+    table:
+      name: users
+      schema: public
+  type: create_update_permission

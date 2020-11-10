@@ -1,7 +1,7 @@
 version: "3.6"
 services:
   hasura:
-    image: hasura/graphql-engine:v1.2.0-beta.2
+    image: hasura/graphql-engine:v1.2.0-beta.3
     ports:
       - "8080:8080"
     restart: always
@@ -12,6 +12,7 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
       AUTH_SERVER_URL: "http://host.docker.internal:1111/graphql"
+      HASURA_GRAPHQL_LOG_LEVEL: "debug"
 
   postgres:
     image: postgres:10.5

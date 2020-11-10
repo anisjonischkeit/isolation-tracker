@@ -18,10 +18,7 @@ let make = () => {
 
   let loginToFB = _e => {
     setLoginState(_ => Loading);
-    Hello.login(
-      "facebook",
-      {redirect_uri: "localhost:1111/fb-login-callback"},
-    )
+    Hello.login("facebook", {redirect_uri: ""})
     ->Promise.get(r =>
         switch (r) {
         | Ok(res) => setLoginState(_ => LoggedIn(res.authResponse))
@@ -59,12 +56,13 @@ let make = () => {
       ->React.array
     </div>
   | LoggedIn(authResponse) =>
+    Js.log(authResponse);
     <div>
       [|
         {("logged in as" ++ authResponse.access_token)->React.string},
         logoutBtn,
       |]
       ->React.array
-    </div>
+    </div>;
   };
 };
